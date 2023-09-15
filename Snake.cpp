@@ -8,26 +8,44 @@ using namespace std;
 bool gameover,godmode;
 const int height=20;
 const int width=20;
+char color[10];
 
-int x,y,fruitx,fruity,score;
+int x,y,fruitx,fruity,score,p;
 int tailx[100],taily[100],tailn,level,L;
 
 enum Directions { STOP = 0, UP, DOWN, LEFT, RIGHT };
 Directions dir;
-
+	
 void setup()
 {	
 	gameover = false;
 	dir=STOP;
 	x=width/2;
 	y=height/2;
-	fruitx=rand()%width-1;
-	fruity=rand()%height-1;
+	fruitx=rand() % (width-2) + 1;
+	fruity=rand()% (height-2)+1;
 	tailn=0;
 	L=1;
-	level=300;
+	level=100;
 	godmode = false;
+	strcpy(color,"color 0F");
 }
+
+void Bcolor()
+{
+	system("cls");
+		cout<<"\n\t\t 1 - Black";
+		cout<<"\n\t\t 2 - Green(Retro)";
+		cout<<"\n\t\t Your choice: "; cin>>p;
+		
+	switch(p)
+	{
+		case 1 : strcpy(color,"color 0F"); break;
+		case 2 : strcpy(color,"color 20"); break;
+		default : break;
+	}
+}
+
 void difficulty()
 {
 	system("cls");
@@ -60,34 +78,37 @@ void info()
 
 void startmenu()
 {
-setup();	
-bool z=true;
-	do
-	{	
-		system("cls");
-		cout<<"\n\n\t\t\tSNAKE";
-		cout<<"\n\t\t 1.Start game";
-		cout<<"\n\t\t 2.Level of difficulty: Current level - L: "<<L;
-		cout<<"\n\t\t 3.Instructions";
-		cout<<"\n\t\t ESC.Exit\n";
+	setup();	
+	bool z=true;
+		do
+		{	
+			system("cls");
+			cout<<"\n\n\t\t\tSNAKE";
+			cout<<"\n\t\t 1.Start game";
+			cout<<"\n\t\t 2.Level of difficulty: Current level - L: "<<L;
+			cout<<"\n\t\t 3.Background Color";
+			cout<<"\n\t\t 4.Instructions";
+			cout<<"\n\t\t ESC.Exit\n";
+			
+			switch(_getch())
+			{
+				case 49 : z=false; break;
+				case 50 : difficulty(); break;
+				case 51 : Bcolor(); break;
+				case 52 : info(); break;
+				case 27 : gameover=true,z=false; break;
+				default : z=false; break;
+			}
 		
-		switch(_getch())
-		{
-			case 49 : z=false; break;
-			case 50 : difficulty(); break;
-			case 51 : info(); break;
-			case 27 : gameover=true,z=false; break;
-			default : z=false; break;
-		}
-		
-	}while(z);
+		}while(z);
 }
-
 
 
 void draw()
 {
 	system("cls");
+	
+	system(color);
 
 	for(int i=0; i<width; i++)
 	{
@@ -102,7 +123,8 @@ void draw()
 			else if(i==y && j==x)
 			{
 				cout<<"O";
-			}else if(i==fruity && j==fruitx)
+			}
+			else if(i==fruity && j==fruitx)
 			{
 				cout<<"F";
 			}
@@ -128,8 +150,8 @@ void draw()
 	{
 		cout<<"#";
 	}cout<<endl;
+	
 	cout<<"SCORE:"<<score<<endl;
-	cout<<"level:"<<level<<endl;
 }
 
 void input()
@@ -184,7 +206,7 @@ void logic()
 	}
 	else 
 	{
-		if(x<0 || x>width || y<0 || y>height) gameover=true;
+		if(x<1 || x>=width-1 || y<0 || y>height-1) gameover=true;
 	}
 	
 	for(int i=0; i<tailn; i++)
@@ -195,18 +217,19 @@ void logic()
 	if(x==fruitx && y==fruity)
 	{
 		score+=10;	
-		fruitx=rand()%width;
-		fruity=rand()%height;
+		fruitx=rand() % (width-2) + 1;
+		fruity=rand()% (height-2)+1;
 		tailn++;
 		if(level!=0)level-=5;
+		Beep(300,50);
 	} 
 	
 	if(gameover)
 	{
+		for(int i=5; i>1; i--)Beep(i*100, 100);
 		cout<<"GAME OVER!"<<endl;
 		system("pause");
 	}
-	
 }
 
 int main()
@@ -214,9 +237,8 @@ int main()
 	srand(time(0));
 	
 	startmenu();
-	
 	while(!gameover)
-	{
+	{	
 		draw();
 		input();
 		logic();
